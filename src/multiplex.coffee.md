@@ -81,5 +81,5 @@ multiplex.
           running:
             addPipeline: state.bind ->
               pipeline = @superstate.call 'addPipeline'
-              pipeline.start.apply pipeline, @args
+              pipeline.start.apply pipeline, @owner.args
               pipeline
