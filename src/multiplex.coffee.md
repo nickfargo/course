@@ -71,14 +71,14 @@ multiplex.
 ### States
 
       state @::,
-        Inactive:
-          Incipient:
+        inactive:
+          incipient:
             start: state.method ->
               do @owner.fill
               protostate.apply 'start', arguments
 
-        Active:
-          Running:
+        active:
+          running:
             addPipeline: ->
               pipeline = @superstate.call 'addPipeline'
               pipeline.start.apply pipeline, @args
