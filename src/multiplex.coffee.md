@@ -73,13 +73,13 @@ multiplex.
       state @::,
         inactive:
           incipient:
-            start: state.method ->
-              do @owner.fill
+            start: state.fix ( autostate, protostate ) ->
+              do @fill
               protostate.apply 'start', arguments
 
         active:
           running:
-            addPipeline: ->
+            addPipeline: state.bind ->
               pipeline = @superstate.call 'addPipeline'
               pipeline.start.apply pipeline, @args
               pipeline
