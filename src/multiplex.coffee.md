@@ -9,8 +9,8 @@ to the number of pipelines (`width`) at a time.
 
 ### Constructor
 
-      constructor: ( width, source, options ) ->
-        super source, options
+      constructor: ( width, source, attributes ) ->
+        super source, attributes
 
         @width = width
         @currentWidth = 0
@@ -32,11 +32,11 @@ to the number of pipelines (`width`) at a time.
 
 #### addPipeline
 
-Adds a substituent pipeline acting on the same shared `@source` of this
+Adds a substituent pipeline acting on the same shared `@iterator` of this
 multiplex.
 
       addPipeline: ->
-        pipeline = new Pipeline @source
+        pipeline = new Pipeline @iterator
         pipeline.on 'willContinue', @beforeSubpipelineContinues
         pipeline.on 'didContinue', @afterSubpipelineContinues
 
