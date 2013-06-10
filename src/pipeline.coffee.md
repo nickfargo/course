@@ -150,8 +150,8 @@ by an asynchronous function that failed to produce its `Future` as intended.
                 ( if @iterator then iterate else @accept )
                     .apply this, arguments
 
-              rescue: -> @go 'error', arguments
-              pause: -> @go 'pausing'
+              rescue: -> @state '-> error', arguments
+              pause: -> @state '-> pausing'
               suspend: ->
 
 
@@ -159,14 +159,14 @@ by an asynchronous function that failed to produce its `Future` as intended.
 
             pausing: state
               pause: ->
-              suspend: -> @go 'suspended'
-              resume: -> @go 'running'
+              suspend: -> @state '-> suspended'
+              resume: -> @state '-> running'
 
 
 #### suspended
 
           suspended: state
-            resume: -> @go 'running'
+            resume: -> @state '-> running'
 
 
 #### error
@@ -262,11 +262,11 @@ pipeline is rejected.
 
               relay: ->
                 @index = @caughtAtIndex
-                @go 'running', arguments
+                @state '-> running', arguments
 
               resume: ->
-                @go 'running', arguments
+                @state '-> running', arguments
 
               retry: ->
                 @index -= 1
-                @go 'running', arguments
+                @state '-> running', arguments

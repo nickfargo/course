@@ -24,9 +24,11 @@ collective result of an iterable sequence of constituent futures or functions.
 
 ### Constructor
 
+Takes an **iterable** `source`
+
       constructor: ( source, @attributes ) ->
         source = source.apply this, arguments if typeof source is 'function'
-        source = new ElementIterator source if isArray source
+        source = new ArrayIterator source if isArray source
         throw new TypeError unless isIterable source
         @iterator = source
 
@@ -62,8 +64,6 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
 
       promise: -> @deferral.promise()
 
-      go: -> ( s = @state() ).go.apply s, arguments
-
 
 
 ### States
@@ -86,7 +86,7 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
               if input?
                 @args = if isArray input then input[..] else [input]
               @deferral = new DeferralConstructor
-              @go 'running', arguments
+              @state '-> running', arguments
               this
 
           resolved: state 'abstract conclusive',
@@ -104,9 +104,9 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
 
         active: state 'default abstract',
 
-          accept: -> @go 'accepted', arguments; this
-          reject: -> @go 'rejected', arguments; this
-          cancel: -> @go 'canceled', arguments; this
+          accept: -> @state '-> accepted', arguments; this
+          reject: -> @state '-> rejected', arguments; this
+          cancel: -> @state '-> canceled', arguments; this
 
           running: state 'default'
 
