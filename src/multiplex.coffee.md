@@ -16,14 +16,14 @@ to the number of pipelines (`width`) at a time.
         @currentWidth = 0
         @first = @last = null
 
-        @beforeSubpipelineContinues = ( event ) =>
+        @beforeSubpipelineContinues = ( pipeline ) =>
           if @currentWidth > @width
             @currentWidth -= 1
-            do event.pipeline.stop
+            do pipeline.stop
           else do fill if @currentWidth < @width
 
-        @afterSubpipelineContinues = ( event ) =>
-          @args = event.args
+        @afterSubpipelineContinues = ( pipeline ) =>
+          @args = pipeline.args
 
 
 

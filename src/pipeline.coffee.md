@@ -79,7 +79,7 @@ React to an instructional signal response if one is received.
                   break     if value is STOP
                   return    if value is WAIT
 
-                @emit 'willContinue' if observed
+                @emit 'willContinue', this if observed
 
 Determine whether `value` can be treated as a future. If asynchronicity is
 enforced, any non-future values must be wrapped in a `Future`.
@@ -124,7 +124,7 @@ to skip ahead synchronously and pipe no arguments forward.
                   then emptySet
                   else if isArray value then value else [value]
 
-                @emit 'didContinue' if observed
+                @emit 'didContinue', this if observed
 
 Check if we’re `pausing` on this turn and need to become `suspended`.
 
@@ -146,7 +146,7 @@ by an asynchronous function that failed to produce its `Future` as intended.
 
             methods:
               proceed: ->
-                @emit 'didContinue' if @attributes & HAS_OBSERVERS
+                @emit 'didContinue', this if @attributes & HAS_OBSERVERS
                 ( if @iterator then iterate else @accept )
                     .apply this, arguments
 
