@@ -24,10 +24,12 @@ collective result of an iterable sequence of constituent futures or functions.
 
 ### Constructor
 
-Takes an **iterable** `source`
+Takes an **iterable** `source` and instates it as the `iterator` of `this`.
+The `source` may be provided as an array, a proper `Iterator`, or a function
+that returns either, including a **generator** function.
 
       constructor: ( source, @attributes ) ->
-        source = source.apply this, arguments if typeof source is 'function'
+        source = source.call this if typeof source is 'function'
         source = new ArrayIterator source if isArray source
         throw new TypeError unless isIterable source
         @iterator = source
