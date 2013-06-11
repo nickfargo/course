@@ -1,6 +1,13 @@
+    FutureComposition = require './future-composition'
+    { state } = require '../../will'
+
+    module.exports =
+
+
+
 ## Multiplex
 
-A multiplex is a composite future made up of a finite number of substituent
+A **multiplex** is a composite future made up of a finite number of substituent
 `Pipeline`s. Elements provided to the multiplex are processed concurrently up
 to the number of pipelines (`width`) at a time.
 

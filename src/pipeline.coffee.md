@@ -1,3 +1,14 @@
+    FutureComposition = require './future-composition'
+    { state } = require '../../will'
+
+    { isArray } = require 'util'
+
+    { FUTURE_COMPOSITION_ATTRIBUTES } = require './constants'
+
+    module.exports =
+
+
+
 ## Pipeline
 
 A **pipeline** is a sequence of synchronous or asynchronous functions to be

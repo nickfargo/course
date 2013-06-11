@@ -1,3 +1,13 @@
+    { Future, Deferral, state } = require '../../will'
+
+    { isArray } = require 'util'
+
+    { FUTURE_COMPOSITION_ATTRIBUTES } = require './constants'
+
+    module.exports =
+
+
+
 ## FutureComposition
 
 Common base for **composite future constructs** such as `Pipeline`,
@@ -5,21 +15,11 @@ Common base for **composite future constructs** such as `Pipeline`,
 collective result of an iterable sequence of constituent futures or functions.
 
     class FutureComposition extends Future
+      { assign, isIterable } = require './helpers'
+      ArrayIterator = require './array-iterator'
 
       { FORCE_ASYNCHRONOUS, HAS_OBSERVERS } =
           assign this, FUTURE_COMPOSITION_ATTRIBUTES
-
-      { toString } = Object::
-      { slice } = Array::
-
-      getTypeOf = ( o ) ->
-        toString.call( o ).match( /^\[object (\w+)\]$/ )[1]?.toLowerCase()
-
-      isIterable = ( o ) ->
-        return false unless o?
-        type = getTypeOf o
-        type is 'generator' or type is 'iterator' or
-          typeof o.next is 'function'
 
 
 ### Constructor
