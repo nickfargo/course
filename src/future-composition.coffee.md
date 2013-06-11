@@ -81,7 +81,12 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
             " with arguments #{ args.join ', ' }"
 
 
+#### inactive
+
         inactive: state 'abstract',
+
+
+#### inactive.incipient
 
           incipient: state 'initial',
             admit: false
@@ -98,8 +103,13 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
               deferral = @deferral or = new @constructor.DeferralConstructor
               deferral.promise()
 
+
+#### inactive.resolved
+
           resolved: state 'abstract conclusive',
 
+
+#### inactive.resolved.completed
 
             completed: state 'default abstract',
               enter: ( transition, args ) -> @args = args if args
@@ -110,6 +120,8 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
               rejected: state 'final',
                 enter: -> do @deferral.reject
 
+
+#### inactive.resolved.canceled
 
             canceled: state 'final',
               enter: -> do @terminate
