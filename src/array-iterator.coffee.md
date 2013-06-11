@@ -4,11 +4,17 @@ A standard iterator over an Array or array-like `source`.
 
     class ArrayIterator
 
+
+### Constructor
+
       constructor: ( source ) ->
         throw TypeError unless ( length = source?.length ) and not isNaN length
         @source = source[..]
         @index = -1
         @yielded = done: no, value: undefined, index: undefined
+
+
+### Methods
 
 
 #### next
