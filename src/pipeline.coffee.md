@@ -1,5 +1,5 @@
     FutureComposition = require './future-composition'
-    { state } = require '../../will'
+    { Future, state } = require '../../will'
 
     { isArray } = require 'util'
 
