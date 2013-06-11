@@ -31,13 +31,12 @@ value or array of values to be passed to the next as its input.
 
 ### Constructor
 
-      constructor: ->
-        super
-
-The pipeline progresses asynchronously by passing this pair of context-bound
+A pipeline progresses asynchronously by passing a pair of context-bound
 functions, which delegate to the pipeline’s `proceed` and `rescue` methods, to
 any `Future`s or futuroids it encounters.
 
+      constructor: ->
+        super
         @__proceed__ = => @proceed.apply this, arguments
         @__rescue__  = => @rescue.apply this, arguments
 
@@ -54,6 +53,22 @@ any `Future`s or futuroids it encounters.
 
 
 #### active.running
+
+The `default` or “normal” state for an `active` pipeline is `running`.
+
+In this state, the pipeline advances through the elements of its `iterator`.
+Functions received from the iterator are applied in the pipeline’s prevailing
+`context`, with the pipeline’s previously held `values` as arguments; the
+function’s output then becomes the pipeline’s new `values`, to be passed onto
+the next iterated element.
+
+Function elements that return `Future`s or “futuroids” are treated
+asynchronously: the pipeline will await the future’s result, allowing the call
+stack to unwind, and later when the future resolves, will instate the future’s
+resultant `value` or `values` as its own.
+
+Notably, in the `running` state, elements tagged `catch` are skipped — these
+are recognized only while in the `error` state.
 
           running: state do ->
             iterate = ( @args... ) ->
@@ -145,14 +160,17 @@ Check if we’re `pausing` on this turn and need to become `suspended`.
 
                 return if @suspend()?
 
-If panic strikes, hit the `error` state and bail. This will usually be caused
-either by a synchronous function that threw a typical uncaught exception, or
-by an asynchronous function that failed to produce its `Future` as intended.
+Exceptions must send the pipeline directly into the `error` state. This will
+usually be caused either by a synchronous function that threw a typical
+uncaught exception, or by an asynchronous function that failed to produce its
+`Future` as intended.
 
-              catch error then @rescue error; return
+              catch error
+                @rescue error
+                return
 
               @accept.apply this, @args = args
-            #/function iterate
+            # end function iterate
 
             events:
               enter: ( transition, args ) ->
@@ -170,7 +188,11 @@ by an asynchronous function that failed to produce its `Future` as intended.
               suspend: ->
 
 
-#### active.pausing
+#### active.running.pausing
+
+A `running` pipeline may be `pause`d, in which case it immediately enters into
+its `pausing` substate. There it awaits the completion of the most recent
+`running` iteration, after which it will transition to the `suspended` state.
 
             pausing: state
               pause: ->
@@ -178,17 +200,17 @@ by an asynchronous function that failed to produce its `Future` as intended.
               resume: -> @state '-> running'
 
 
-#### suspended
+#### active.suspended
 
           suspended: state
             resume: -> @state '-> running'
 
 
-#### error
+#### active.error
 
-The pipeline enters the `error` state when an element is rejected. This causes
-it to pass control to the nearest downstream `catch` block that can handle the
-error.
+The pipeline enters the `error` state when an element is rejected (or throws).
+This causes it to pass control to the nearest downstream `catch` block that can
+handle the error.
 
 The pipeline remains in the `error` state until the `catch` is resolved. If
 the `catch` is accepted, the pipeline returns to the `running` state, by
@@ -206,23 +228,24 @@ rejected, the pipeline is in turn rejected as well.
                 @iterator = iterator = null if done
 
 Skip ahead to the next valid `catch` element that either lacks or satisfies an
-attached `predicate` condition.
+attached conditional `predicate`.
 
                 continue unless value?.type is 'catch'
                 { predicate, value } = value
                 continue if typeof predicate is 'function' and
                   not predicate.apply context, args
 
-The error is caught. Evaluate the `catch` function.
+The error is now caught. If the `catch` element is a function, apply it and
+proceed with its returned `value`.
 
                 @caughtAtIndex = index
                 if typeof value is 'function'
                   value = value.apply context, args
 
-**Asynchronous catch** — If the catch value is a future, then set callbacks for
-it and return immediately, remaining in the `error` state. If the catch future
-is accepted, the pipeline will recover to the `running` state; if the catch
-future is rejected, the pipeline will remain in the `error` state.
+**Asynchronous catch** — If the caught `value` is a future, then set callbacks
+for it and return immediately, remaining in the `error` state. If this caught
+future is accepted, the pipeline will recover to the `running` state; if the
+caught future is rejected, the pipeline will remain in the `error` state.
 
                 if value? or forceAsync
                   future = value if value instanceof Future
@@ -236,7 +259,7 @@ future is rejected, the pipeline will remain in the `error` state.
                     futuroid.then __proceed__, __rescue__
                     return
 
-**Synchronous catch** — If the returned value represents a control statement,
+**Synchronous catch** — If the caught value represents a control statement,
 allow an invocation to interpret and react to it; otherwise the pipeline must
 automatically recover to `running`, with `value` piped to the element that
 follows the `catch`.
@@ -258,8 +281,8 @@ If no valid catch exists, or if no valid catch results in a recovery, then the
 pipeline is rejected.
 
 > If the pipeline is an agent for a containing invocation, then its rejection
-> will result in the invocation entering its `error` state, thereby
-> propagating the error up the invocation graph.
+  will result in the invocation entering its `error` state, thereby
+  propagating the error up the invocation graph.
 
               @args = args
               do @reject

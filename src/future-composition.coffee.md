@@ -26,9 +26,9 @@ collective result of an iterable sequence of constituent futures or functions.
 
 ### Constructor
 
-Takes an **iterable** `source` and instates it as the `iterator` of `this`.
-The `source` may be provided as an array, a proper `Iterator`, or a function
-that returns either, including a **generator** function.
+An **iterable** `source` is instated as the `iterator` of `this`. The `source`
+may be provided as an array, a proper `Iterator`, or a function that returns
+either, including a **generator** function.
 
       constructor: ( source, @attributes ) ->
         source = source.call this if typeof source is 'function'
