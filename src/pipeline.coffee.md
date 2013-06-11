@@ -1,5 +1,9 @@
 ## Pipeline
 
+A **pipeline** is a sequence of synchronous or asynchronous functions to be
+executed in order, where each takes a set of arguments as input and returns a
+value or array of values to be passed to the next as its input.
+
     class Pipeline extends FutureComposition
 
       @INSTRUCTIONS =
