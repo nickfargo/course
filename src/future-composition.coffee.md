@@ -21,6 +21,8 @@ collective result of an iterable sequence of constituent futures or functions.
       { FORCE_ASYNCHRONOUS, HAS_OBSERVERS } =
           assign this, FUTURE_COMPOSITION_ATTRIBUTES
 
+      @DeferralConstructor = Deferral
+
 
 ### Constructor
 
@@ -64,7 +66,7 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
         fn.apply this, args for fn in callbacks
         return
 
-      promise: -> @deferral.promise()
+      promise: -> @deferral?.promise()
 
 
 
@@ -83,13 +85,18 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
 
           incipient: state 'initial',
             admit: false
-            start: ( input, DeferralConstructor = Deferral ) ->
+
+            start: ( input ) ->
               @context = this
               if input?
                 @args = if isArray input then input[..] else [input]
-              @deferral = new DeferralConstructor
+              @deferral or = new @constructor.DeferralConstructor
               @state '-> running', arguments
               this
+
+            promise: ->
+              deferral = @deferral or = new @constructor.DeferralConstructor
+              deferral.promise()
 
           resolved: state 'abstract conclusive',
             enter: ( transition, args ) -> @args = args if args
