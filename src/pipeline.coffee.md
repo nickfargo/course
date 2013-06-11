@@ -216,7 +216,8 @@ attached `predicate` condition.
 The error is caught. Evaluate the `catch` function.
 
                 @caughtAtIndex = index
-                value = value.apply context, args
+                if typeof value is 'function'
+                  value = value.apply context, args
 
 **Asynchronous catch** — If the catch value is a future, then set callbacks for
 it and return immediately, remaining in the `error` state. If the catch future
