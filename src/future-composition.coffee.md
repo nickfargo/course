@@ -99,16 +99,20 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
               deferral.promise()
 
           resolved: state 'abstract conclusive',
-            enter: ( transition, args ) -> @args = args if args
 
-            accepted: state 'default final',
-              enter: -> do @deferral.accept
 
-            rejected: state 'final',
-              enter: -> do @deferral.reject
+            completed: state 'default abstract',
+              enter: ( transition, args ) -> @args = args if args
 
-          canceled: state 'final',
-            enter: -> do @terminate
+              accepted: state 'default final',
+                enter: -> do @deferral.accept
+
+              rejected: state 'final',
+                enter: -> do @deferral.reject
+
+
+            canceled: state 'final',
+              enter: -> do @terminate
 
 
         active: state 'default abstract',
