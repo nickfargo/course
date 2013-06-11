@@ -75,7 +75,7 @@ multiplex.
 
         inactive: state
           incipient: state
-            start: fix ( autostate, protostate ) ->
+            start: fix ( autostate, protostate ) -> ->
               do @fill
               protostate.apply 'start', arguments
 
