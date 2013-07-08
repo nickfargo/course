@@ -94,9 +94,9 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
             start: ( input ) ->
               @context = this
               if input?
-                @args = if isArray input then input[..] else [input]
+                @args = args = if isArray input then input[..] else [input]
               @deferral or = new @constructor.DeferralConstructor
-              @state '-> running', arguments
+              @state '-> running', args
               this
 
             promise: ->
