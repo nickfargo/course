@@ -61,6 +61,11 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
         ( events[ eventType ] or = [] ).push callback
         this
 
+      once: ->
+        deferral = @deferral or = new @constructor.DeferralConstructor
+        deferral.once.apply deferral, arguments
+        return
+
       emit: ( eventType, args ) ->
         return unless callbacks = @events?[ eventType ]
         fn.apply this, args for fn in callbacks
