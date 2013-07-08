@@ -120,10 +120,10 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
               enter: ( transition, args ) -> @args = args if args
 
               accepted: state 'default final',
-                enter: -> do @deferral.accept
+                enter: -> @deferral.accept @args...
 
               rejected: state 'final',
-                enter: -> do @deferral.reject
+                enter: -> @deferral.reject @args...
 
 
 #### inactive.resolved.canceled
