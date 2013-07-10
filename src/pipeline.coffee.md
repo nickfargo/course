@@ -116,7 +116,7 @@ enforced, any non-future values must be wrapped in a `Future`.
 
                 if value? or forceAsync
                   future = value if value instanceof Future
-                  futuroid = future or isFuturoid value
+                  futuroid = future or ( value if isFuturoid value )
                   future = value = wrap value if forceAsync and not futuroid
 
 **Asynchronous** — defer to the `future` or `futuroid` and return immediately.
@@ -251,7 +251,7 @@ caught future is rejected, the pipeline will remain in the `error` state.
 
                 if value? or forceAsync
                   future = value if value instanceof Future
-                  futuroid = future or isFuturoid value
+                  futuroid = future or ( value if isFuturoid value )
                   future = value = wrap value if forceAsync and not futuroid
                   if future
                     future.once 'accepted', __proceed__
