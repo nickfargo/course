@@ -29,7 +29,7 @@
             .done -> do end
         pipe.start 4
 
-      it "pipes values through functions asynchronously", ->
+      it "pipes values through functions asynchronously", ( end ) ->
         { willBe } = Future
 
         pipe = new Pipeline [
@@ -40,7 +40,7 @@
             .done -> do end
         pipe.start 4
 
-      it "integrates synchronous and asynchronous elements", ->
+      it "integrates synchronous and asynchronous elements", ( end ) ->
         { willBe } = Future
 
         pipe = new Pipeline [
