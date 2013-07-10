@@ -132,6 +132,8 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
               enter: -> do @terminate
 
 
+#### active
+
         active: state 'default abstract',
 
           accept: -> @state '-> accepted', arguments; this
