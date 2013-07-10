@@ -219,8 +219,10 @@ rejected, the pipeline is in turn rejected as well.
 
           error: state do ->
             iterate = ( @args... ) ->
-              { iterator, context, invocation } = this
+              { iterator, context, invocation, attributes } = this
               { __proceed__, __rescue__ } = this
+
+              forceAsync = !!( attributes & FORCE_ASYNCHRONOUS )
 
               try while iteration = iterator?.next iteration
                 { done, value, index } = iteration
