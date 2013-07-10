@@ -52,7 +52,22 @@ substituent `Pipeline` within a `Multiplex`) this value will remain `null`.
 
 
 
+### Class functions
+
+
+#### catch
+
+Boxes a `value` and optional `predicate` in a `catch`-typed object.
+
+      @catch = ( predicate, value ) ->
+        if not value? then value = predicate; predicate = null
+        { type: 'catch', predicate, value }
+
+
+
 ### Methods
+
+      catch: @catch
 
       on: ( eventType, callback ) ->
         unless events = @events
