@@ -266,9 +266,9 @@ allow an invocation to interpret and react to it; otherwise the pipeline must
 automatically recover to `running`, with `value` piped to the element that
 follows the `catch`.
 
-                else
-                  return if value.control? and invocation?.jump value
-                  @args = args = if value is undefined
+                unless value is undefined
+                  return if value?.control? and invocation?.jump value
+                  @args = args = if value is null
                   then emptySet
                   else if isArray value then value else [value]
                   @relay.apply this, args
