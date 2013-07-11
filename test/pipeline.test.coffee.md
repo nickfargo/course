@@ -57,6 +57,7 @@
             .done -> do end
         pipe.start 4
 
+
       it "processes integrated sync elements synchronously", ( end ) ->
         { willBe } = Future
 
@@ -77,25 +78,81 @@ yielded by `dave`, into which the pipeline has passed its current value of `2`.
         pipe.then( (a) -> expect( a ).to.equal 42 )
             .done -> do end
 
-      it "catches downstream errors", ( end ) ->
-        pipe = new Pipeline -> [
-          (x) -> x * x
 
-          (x) -> throw 'just because'
+      describe "Catch cascading:", ->
 
-          @catch ( (reason) -> reason is 'reasonable' ), ->
-            expect(0).to.equal(1); "won't happen"
+        it "catches downstream errors", ( end ) ->
+          pipe = new Pipeline -> [
+            (x) -> x * x
 
-          (skipMe) ->
-            expect(0).to.equal(1); "won't happen"
+            (x) -> throw 'just because'
 
-          @catch ( (reason) -> reason is 'just because' ), (reason) ->
-            return 42
+            @catch ( (reason) -> reason is 'reasonable' ), ->
+              expect(0).to.equal(1); "won't happen"
 
-          (x) -> [ 'recovered!', x ]
-        ]
-        pipe.start 4
+            (skipMe) ->
+              expect(0).to.equal(1); "won't happen"
 
-        pipe.then( ( message, value ) ->
-            expect([ message, value ]).to.eql [ 'recovered!', 42 ]
-          ).done -> do end
+            @catch ( (reason) -> reason is 'just because' ), (reason) ->
+              return 42
+
+            (x) -> [ 'recovered!', x ]
+          ]
+          pipe.start 4
+
+          pipe.then( ( message, value ) ->
+              expect([ message, value ]).to.eql [ 'recovered!', 42 ]
+            ).done -> do end
+
+
+        it "catches downstream rejections", ( end ) ->
+          pipe = new Pipeline -> [
+            (x) -> x * x
+
+            (x) -> Future.reject 'just because'
+
+            @catch ( (reason) -> reason is 'reasonable' ), ->
+              expect(0).to.equal(1); "won't happen"
+
+            (skipMe) ->
+              expect(0).to.equal(1); "won't happen"
+
+            @catch ( (reason) -> reason is 'just because' ), (reason) ->
+              return 42
+
+            (x) -> [ 'recovered!', x ]
+          ]
+          pipe.start 4
+
+          pipe.then( ( message, value ) ->
+              expect([ message, value ]).to.eql [ 'recovered!', 42 ]
+            ).done -> do end
+
+
+        it "failure to catch rejects the pipeline", ( end ) ->
+          pipe = new Pipeline -> [
+            (x) -> x * x
+
+            (x) -> Future.reject 'just because'
+
+            @catch ( (reason) -> reason is 'reasonable' ), ->
+              expect(0).to.equal(1); "won't happen"
+
+            (skipMe) ->
+              expect(0).to.equal(1); "won't happen"
+
+            @catch ( (reason) -> reason is 'fathomable' ), ->
+              expect(0).to.equal(1); "won't happen"
+
+            (x) ->
+              expect(0).to.equal(1); "won't happen"
+          ]
+          pipe.start 4
+
+          pipe.then(
+              -> expect(0).to.equal(1); "won't happen"
+            ,
+              ( reason ) ->
+                expect( reason ).to.equal 'just because'
+            )
+            .done -> do end
