@@ -71,6 +71,9 @@ Notably, in the `running` state, elements tagged `catch` are skipped — these
 are recognized only while in the `error` state.
 
           running: state do ->
+
+##### iterate
+
             iterate = ( @args... ) ->
               { iterator, context, invocation, attributes } = this
               { __proceed__, __rescue__ } = this
@@ -169,8 +172,11 @@ uncaught exception, or by an asynchronous function that failed to produce its
                 @rescue error
                 return
 
+Exhausting the iterator causes the pipeline to `accept` the final `args`.
+
               @accept.apply this, @args = args
-            # end function iterate
+
+*(end `iterate`)*
 
             events:
               enter: ( transition, args ) ->
@@ -218,6 +224,9 @@ default continuing from the element after the `catch`. If the `catch` is
 rejected, the pipeline is in turn rejected as well.
 
           error: state do ->
+
+##### iterate
+
             iterate = ( @args... ) ->
               { iterator, context, invocation, attributes } = this
               { __proceed__, __rescue__ } = this
@@ -279,15 +288,12 @@ An `error` thrown during iteration will supersede the previous error held in
 
               catch error then @rescue error; return
 
-If no valid catch exists, or if no valid catch results in a recovery, then the
+If no valid catch exists, or if no catch results in a recovery, then the
 pipeline is rejected.
 
-> If the pipeline is an agent for a containing invocation, then its rejection
-  will result in the invocation entering its `error` state, thereby
-  propagating the error up the invocation graph.
               @reject.apply this, @args = args
 
-              this
+*(end `iterate`)*
 
             events:
               enter: ( transition, args ) -> iterate.apply this, args
