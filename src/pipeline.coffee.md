@@ -285,9 +285,8 @@ pipeline is rejected.
 > If the pipeline is an agent for a containing invocation, then its rejection
   will result in the invocation entering its `error` state, thereby
   propagating the error up the invocation graph.
+              @reject.apply this, @args = args
 
-              @args = args
-              do @reject
               this
 
             events:
