@@ -168,9 +168,7 @@ usually be caused either by a synchronous function that threw a typical
 uncaught exception, or by an asynchronous function that failed to produce its
 `Future` as intended.
 
-              catch error
-                @rescue error
-                return
+              catch error then @rescue error; return
 
 Exhausting the iterator causes the pipeline to `accept` the final `args`.
 
