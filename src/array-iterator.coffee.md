@@ -35,12 +35,12 @@ Any optional `input` must match the shape of `yielded`, specifically `{index}`.
 
         @index = index += 1
 
-        if index >= length
-          yielded.index = length
-          yielded.value = undefined
-          yielded.done  = yes
-        else
-          yielded.index = index
+        if index < length
           yielded.value = source[ index ]
           yielded.done  = no
+          yielded.index = index
+        else
+          yielded.value = undefined
+          yielded.done  = yes
+          yielded.index = length
         yielded
